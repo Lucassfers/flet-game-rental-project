@@ -1,29 +1,38 @@
 import flet as ft
 import requests
 
-API_URL = "http://localhost:3000/jogos" 
+API_JOGOS_URL = "http://localhost:3000/jogos" 
+API_DESENVOLVEDORAS_URL = "http://localhost:3000/desenvolvedoras"
 
 def graf_desenvolvedora(page):
 
-    def obter_jogos_api():
+    def obter_dados_api():
         try:
-            response = requests.get(API_URL)
-            response.raise_for_status()
-            return response.json()
+            response_jogos = requests.get(API_JOGOS_URL)
+            response_jogos.raise_for_status()
+            jogos_data = response_jogos.json()
 
+            response_desenvolvedoras = requests.get(API_DESENVOLVEDORAS_URL)
+            response_desenvolvedoras.raise_for_status()
+            desenvolvedoras_map = {dev["id"]: dev["nome"] for dev in response_desenvolvedoras.json()}
+
+            for jogo in jogos_data:
+                jogo["desenvolvedora_nome"] = desenvolvedoras_map.get(jogo.get("desenvolvedoraId"), "Desconhecida")
+            
+            return jogos_data
         except Exception as err:
-            page.snack_bar = ft.SnackBar(ft.Text(f"Erro ao carregar jogos: {err}"))
+            page.snack_bar = ft.SnackBar(ft.Text(f"Erro ao carregar dados: {err}"))
             page.snack_bar.open = True
             page.update()
             return []
 
-    jogos = obter_jogos_api()
+    jogos = obter_dados_api()
     
     dicionario = {}
 
     for j in jogos:
-        desenvolvedora = j['desenvolvedora']
-        dicionario[desenvolvedora] = dicionario.get(desenvolvedora, 0) + 1
+        desenvolvedora_nome = j['desenvolvedora_nome']
+        dicionario[desenvolvedora_nome] = dicionario.get(desenvolvedora_nome, 0) + 1
 
     if not dicionario:
         return ft.Text("Nenhum dado disponível.")
@@ -51,9 +60,14 @@ def graf_desenvolvedora(page):
     total_jogos = sum(dicionario2.values())
     
     lista_valores = list(dicionario2.values())
-    outras = sum(lista_valores[10:])    
+    
+    outras = 0
+    if len(lista_valores) > 10:
+        outras = sum(lista_valores[10:])    
+    maior_qtd = 0
+    if lista_valores:
+        maior_qtd = max(lista_valores[0], outras if len(lista_valores) > 10 else 0)
 
-    maior_qtd = max(lista_valores[0], outras)
 
     for i, (marca, qtd) in enumerate(dicionario2.items()):
         
@@ -84,32 +98,32 @@ def graf_desenvolvedora(page):
 
         linhas.append(linha)
 
-    largura_barra = (outras / maior_qtd) * largura_max
-    percentual = (outras / total_jogos) * 100
-    cor = ft.Colors.GREY
+    if outras > 0: 
+        largura_barra = (outras / maior_qtd) * largura_max
+        percentual = (outras / total_jogos) * 100
+        cor = ft.Colors.GREY
 
-    barra = ft.Container(
-        width=largura_barra,
-        height=30,
-        bgcolor=cor,
-        border_radius=5,
-    )
+        barra = ft.Container(
+            width=largura_barra,
+            height=30,
+            bgcolor=cor,
+            border_radius=5,
+        )
 
-    linha = ft.Row(
-        [
-            ft.Text("Outras desenvolvedora", width=100),
-            barra,
-            ft.Text(f"{outras} produto(s) — {percentual:.1f}%", width=160, text_align=ft.TextAlign.RIGHT)
-        ],
-        alignment=ft.MainAxisAlignment.START,
-        vertical_alignment=ft.CrossAxisAlignment.CENTER,
-        spacing=10
-    )
+        linha = ft.Row(
+            [
+                ft.Text("Outras desenvolvedoras", width=100),
+                barra,
+                ft.Text(f"{outras} produto(s) — {percentual:.1f}%", width=160, text_align=ft.TextAlign.RIGHT)
+            ],
+            alignment=ft.MainAxisAlignment.START,
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=10
+        )
 
-    linhas.append(linha)
+        linhas.append(linha)
 
     return ft.Column(
-        [ft.Text("jogos por Marca", size=22, weight="bold")] + linhas,
-        spacing=10,
+        [ft.Text("Jogos por Desenvolvedora", size=22, weight="bold")] + linhas, 
         scroll=ft.ScrollMode.AUTO
     )

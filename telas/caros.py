@@ -3,23 +3,32 @@ import requests
 import locale
 locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8') 
 
-API_URL = "http://localhost:3000/jogos" 
+API_JOGOS_URL = "http://localhost:3000/jogos" 
+API_DESENVOLVEDORAS_URL = "http://localhost:3000/desenvolvedoras"
 
 def graf_caros(page):
 
-    def obter_jogos_api():
+    def obter_dados_api():
         try:
-            response = requests.get(API_URL)
-            response.raise_for_status()
-            return response.json()
+            response_jogos = requests.get(API_JOGOS_URL)
+            response_jogos.raise_for_status()
+            jogos_data = response_jogos.json()
 
+            response_desenvolvedoras = requests.get(API_DESENVOLVEDORAS_URL)
+            response_desenvolvedoras.raise_for_status()
+            desenvolvedoras_map = {dev["id"]: dev["nome"] for dev in response_desenvolvedoras.json()}
+
+            for jogo in jogos_data:
+                jogo["desenvolvedora_nome"] = desenvolvedoras_map.get(jogo.get("desenvolvedoraId"), "Desconhecida")
+            
+            return jogos_data
         except Exception as err:
-            page.snack_bar = ft.SnackBar(ft.Text(f"Erro ao carregar jogos: {err}"))
+            page.snack_bar = ft.SnackBar(ft.Text(f"Erro ao carregar dados: {err}"))
             page.snack_bar.open = True
             page.update()
             return []
 
-    jogos = obter_jogos_api()
+    jogos = obter_dados_api()
 
     if not jogos:
         return ft.Text("Não há jogos cadastrados.")
@@ -64,7 +73,7 @@ def graf_caros(page):
 
         linha = ft.Row(
             [
-                ft.Text(f"{jogo['nome']} ({jogo['desenvolvedora']})", width=160),
+                ft.Text(f"{jogo['nome']} ({jogo['desenvolvedora_nome']})", width=160), 
                 barra,
                 ft.Text(preco_f, width=80, text_align=ft.TextAlign.RIGHT)
             ],
