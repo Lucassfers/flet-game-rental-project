@@ -1,0 +1,60 @@
+{
+  "jogos": [
+    {
+      "id": "1123",
+      "nome": "The Legend of Zelda: Breath of the Wild",
+      "desenvolvedora": "Nintendo",
+      "genero": "Aventura",
+      "quant": 10,
+      "preco": 299.99
+    },
+    {
+      "id": "2mn0",
+      "nome": "God of War Ragnarok",
+      "desenvolvedora": "Santa Monica Studio",
+      "genero": "Ação",
+      "quant": 8,
+      "preco": 349.9
+    },
+    {
+      "id": "3f4b",
+      "nome": "Minecraft",
+      "desenvolvedora": "Mojang",
+      "genero": "Sandbox",
+      "quant": 20,
+      "preco": 79.9
+    },
+    {
+      "id": "k2d3",
+      "nome": "GTA V",
+      "desenvolvedora": "Rockstar Games",
+      "genero": "Ação",
+      "quant": 15,
+      "preco": 129.9
+    },
+    {
+      "id": "2d3f",
+      "nome": "FIFA 24",
+      "desenvolvedora": "EA Sports",
+      "genero": "Esportes",
+      "quant": 12,
+      "preco": 249.9
+    },
+    {
+      "id": "1722",
+      "nome": "Elden Ring",
+      "desenvolvedora": "Fromsoftware",
+      "genero": "RPG",
+      "quant": 2,
+      "preco": 232
+    },
+    {
+      "id": "1592",
+      "nome": "God of War: Ascension",
+      "desenvolvedora": "Santa Monica Studio",
+      "genero": "Ação",
+      "quant": 5,
+      "preco": 150
+    }
+  ]
+}
