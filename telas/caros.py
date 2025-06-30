@@ -8,32 +8,39 @@ API_DESENVOLVEDORAS_URL = "http://localhost:3000/desenvolvedoras"
 
 def graf_caros(page):
 
-    def obter_dados_api():
+    def obter_desenvolvedoras():
         try:
-            response_jogos = requests.get(API_JOGOS_URL)
-            response_jogos.raise_for_status()
-            jogos_data = response_jogos.json()
-
-            response_desenvolvedoras = requests.get(API_DESENVOLVEDORAS_URL)
-            response_desenvolvedoras.raise_for_status()
-            desenvolvedoras_map = {dev["id"]: dev["nome"] for dev in response_desenvolvedoras.json()}
-
-            for jogo in jogos_data:
-                jogo["desenvolvedora_nome"] = desenvolvedoras_map.get(jogo.get("desenvolvedoraId"), "Desconhecida")
-            
-            return jogos_data
+            response = requests.get(API_DESENVOLVEDORAS_URL)
+            response.raise_for_status()
+            return {str(dev["id"]): dev["nome"] for dev in response.json()}
         except Exception as err:
-            page.snack_bar = ft.SnackBar(ft.Text(f"Erro ao carregar dados: {err}"))
+            page.snack_bar = ft.SnackBar(ft.Text(f"Erro ao carregar desenvolvedoras: {err}"))
+            page.snack_bar.open = True
+            page.update()
+            return {}
+
+    def obter_jogos():
+        try:
+            response = requests.get(API_JOGOS_URL)
+            response.raise_for_status()
+            return response.json()
+        except Exception as err:
+            page.snack_bar = ft.SnackBar(ft.Text(f"Erro ao carregar jogos: {err}"))
             page.snack_bar.open = True
             page.update()
             return []
 
-    jogos = obter_dados_api()
+    desenvolvedoras_map = obter_desenvolvedoras()
+    jogos = obter_jogos()
 
     if not jogos:
         return ft.Text("Não há jogos cadastrados.")
+
+    for jogo in jogos:
+        dev_id = str(jogo.get("desenvolvedoraId"))
+        jogo["desenvolvedora_nome"] = desenvolvedoras_map.get(dev_id, "Desconhecida")
     
-    jogos2 = sorted(jogos, key=lambda j: j['preco'], reverse=True)
+    jogos_ordenados = sorted(jogos, key=lambda j: j['preco'], reverse=True)[:10]
 
     cores = [
         ft.Colors.BLUE,
@@ -49,43 +56,36 @@ def graf_caros(page):
     ]
 
     largura_max = 1000
+    maior_preco = jogos_ordenados[0]['preco'] if jogos_ordenados else 1
 
     linhas = []
-
-    maior_preco = jogos2[0]['preco']
-
-    for i, jogo in enumerate(jogos2):
-        
-        if i == 10:
-            break
-        
+    for i, jogo in enumerate(jogos_ordenados):
         largura_barra = (jogo['preco'] / maior_preco) * largura_max
-        cor = cores[i % len(cores)]
+        preco_formatado = locale.currency(jogo["preco"], grouping=True)
 
-        barra = ft.Container(
-            width=largura_barra,
-            height=30,
-            bgcolor=cor,
-            border_radius=5,
+        linhas.append(
+            ft.Row(
+                [
+                    ft.Text(f"{jogo['nome']} ({jogo['desenvolvedora_nome']})", width=160), 
+                    ft.Container(
+                        width=largura_barra,
+                        height=30,
+                        bgcolor=cores[i % len(cores)],
+                        border_radius=5,
+                    ),
+                    ft.Text(preco_formatado, width=80, text_align=ft.TextAlign.RIGHT)
+                ],
+                alignment=ft.MainAxisAlignment.START,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=10
+            )
         )
-
-        preco_f = locale.currency(jogo["preco"], grouping=True)
-
-        linha = ft.Row(
-            [
-                ft.Text(f"{jogo['nome']} ({jogo['desenvolvedora_nome']})", width=160), 
-                barra,
-                ft.Text(preco_f, width=80, text_align=ft.TextAlign.RIGHT)
-            ],
-            alignment=ft.MainAxisAlignment.START,
-            vertical_alignment=ft.CrossAxisAlignment.CENTER,
-            spacing=10
-        )
-
-        linhas.append(linha)
 
     return ft.Column(
-        [ft.Text("Jogos de maior preço: Top 10", size=22, weight="bold")] + linhas,
+        [
+            ft.Text("Jogos de maior preço: Top 10", size=22, weight="bold"),
+            *linhas
+        ],
         spacing=10,
         scroll=ft.ScrollMode.AUTO
     )

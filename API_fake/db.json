@@ -55,31 +55,39 @@
       "genero": "Ação",
       "quant": 5,
       "preco": 150
+    },
+    {
+      "id": "dd85",
+      "nome": "GTA IV",
+      "desenvolvedoraId": 4,
+      "genero": "Ação",
+      "quant": 5,
+      "preco": 49.9
     }
   ],
   "desenvolvedoras": [
     {
-      "id": 1,
+      "id": "1",
       "nome": "Nintendo"
     },
     {
-      "id": 2,
+      "id": "2",
       "nome": "Santa Monica Studio"
     },
     {
-      "id": 3,
+      "id": "3",
       "nome": "Mojang"
     },
     {
-      "id": 4,
+      "id": "4",
       "nome": "Rockstar Games"
     },
     {
-      "id": 5,
+      "id": "5",
       "nome": "EA Sports"
     },
     {
-      "id": 6,
+      "id": "6",
       "nome": "Fromsoftware"
     }
   ]

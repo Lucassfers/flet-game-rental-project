@@ -14,10 +14,10 @@ def graf_desenvolvedora(page):
 
             response_desenvolvedoras = requests.get(API_DESENVOLVEDORAS_URL)
             response_desenvolvedoras.raise_for_status()
-            desenvolvedoras_map = {dev["id"]: dev["nome"] for dev in response_desenvolvedoras.json()}
+            desenvolvedoras_map = {str(dev["id"]): dev["nome"] for dev in response_desenvolvedoras.json()}
 
             for jogo in jogos_data:
-                jogo["desenvolvedora_nome"] = desenvolvedoras_map.get(jogo.get("desenvolvedoraId"), "Desconhecida")
+                jogo["desenvolvedora_nome"] = desenvolvedoras_map.get(str(jogo.get("desenvolvedoraId")), "Desconhecida")
             
             return jogos_data
         except Exception as err:

@@ -8,26 +8,22 @@ API_JOGOS_URL = "http://localhost:3000/jogos"
 API_DESENVOLVEDORAS_URL = "http://localhost:3000/desenvolvedoras"
 
 def cad_jogos(page: ft.Page):
-    campo_nome = ft.TextField(label="Nome do Jogo", expand=4)
     
-    dropdown_desenvolvedora = ft.Dropdown(
-        label="Desenvolvedora",
-        expand=3,
-        options=[]
-    )
-    
-    campo_genero = ft.TextField(label="Gênero", expand=3)
-    campo_quant = ft.TextField(label="Quant.", expand=1, input_filter=ft.InputFilter(allow=True, regex_string=r"[0-9]", replacement_string=""))
-    campo_preco = ft.TextField(label="Preço R$", expand=2, input_filter=ft.InputFilter(allow=True, regex_string=r"[0-9.]", replacement_string=""))
+    campo_nome = ft.TextField(label="Nome do Jogo")
+    dropdown_desenvolvedora = ft.Dropdown(label="Desenvolvedora", options=[])
+    campo_genero = ft.TextField(label="Gênero")
+    campo_quant = ft.TextField(label="Quantidade")
+    campo_preco = ft.TextField(label="Preço (R$)")
+
 
     tabela = ft.DataTable(
         columns=[
             ft.DataColumn(ft.Text("ID")),
-            ft.DataColumn(ft.Text("Nome do Jogo")),
+            ft.DataColumn(ft.Text("Nome")),
             ft.DataColumn(ft.Text("Desenvolvedora")),
             ft.DataColumn(ft.Text("Gênero")),
             ft.DataColumn(ft.Text("Quant.")),
-            ft.DataColumn(ft.Text("Preço R$")),
+            ft.DataColumn(ft.Text("Preço")),
         ],
         rows=[],
     )
@@ -37,11 +33,11 @@ def cad_jogos(page: ft.Page):
             response = requests.get(API_DESENVOLVEDORAS_URL)
             response.raise_for_status()
             desenvolvedoras_data = response.json()
-            
+
             options = []
             for dev in desenvolvedoras_data:
                 options.append(ft.dropdown.Option(key=str(dev["id"]), text=dev["nome"]))
-            
+
             dropdown_desenvolvedora.options = options
             page.update()
         except Exception as err:
@@ -58,10 +54,10 @@ def cad_jogos(page: ft.Page):
 
             response_desenvolvedoras = requests.get(API_DESENVOLVEDORAS_URL)
             response_desenvolvedoras.raise_for_status()
-            desenvolvedoras_map = {dev["id"]: dev["nome"] for dev in response_desenvolvedoras.json()}
+            desenvolvedoras_map = {str(dev["id"]): dev["nome"] for dev in response_desenvolvedoras.json()}
 
-            for jogo in reversed(jogos):
-                nome_desenvolvedora = desenvolvedoras_map.get(jogo.get("desenvolvedoraId"), "Desconhecida")
+            for jogo in jogos:
+                nome_desenvolvedora = desenvolvedoras_map.get(str(jogo.get("desenvolvedoraId")), "Desconhecida")
                 preco_f = locale.currency(jogo["preco"], grouping=True)
                 tabela.rows.append(ft.DataRow(cells=[
                     ft.DataCell(ft.Text(jogo["id"])),
@@ -97,10 +93,10 @@ def cad_jogos(page: ft.Page):
             page.snack_bar.open = True
             page.update()
             return
-        
+
         novo_jogo = {
             "nome": nome,
-            "desenvolvedoraId": int(desenvolvedora_id), 
+            "desenvolvedoraId": int(desenvolvedora_id),
             "genero": genero,
             "quant": quant,
             "preco": preco,
@@ -132,8 +128,7 @@ def cad_jogos(page: ft.Page):
         campo_quant.value = ""
         campo_preco.value = ""
         page.update()
-    
-    # Chamada direta das funções de carregamento
+
     carregar_desenvolvedoras()
     carregar_jogos_tabela()
 
@@ -159,4 +154,4 @@ def cad_jogos(page: ft.Page):
             border_radius=10,
             bgcolor=ft.Colors.GREY_100
         )
-    ], spacing=10) # Removido o 'on_mount' aqui
+    ], spacing=10)
