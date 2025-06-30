@@ -63,6 +63,30 @@
       "genero": "Ação",
       "quant": 5,
       "preco": 49.9
+    },
+    {
+      "id": "fcf0",
+      "nome": "Call of Duty Black Ops 6",
+      "desenvolvedoraId": 7533,
+      "genero": "Tiro",
+      "quant": 9,
+      "preco": 339
+    },
+    {
+      "id": "4ada",
+      "nome": "Marvel's Spider-Man 2",
+      "desenvolvedoraId": "c1be",
+      "genero": "Ação",
+      "quant": 15,
+      "preco": 249
+    },
+    {
+      "id": "3c44",
+      "nome": "Marvel's Spider-Man: Miles Morales",
+      "desenvolvedoraId": "c1be",
+      "genero": "Ação",
+      "quant": 15,
+      "preco": 199
     }
   ],
   "desenvolvedoras": [
@@ -89,6 +113,14 @@
     {
       "id": "6",
       "nome": "Fromsoftware"
+    },
+    {
+      "id": "c1be",
+      "nome": "Insomniac Games"
+    },
+    {
+      "id": "7533",
+      "nome": "Treyarch"
     }
   ]
 }
